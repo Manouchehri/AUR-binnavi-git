@@ -14,8 +14,8 @@ source=("git://github.com/${_gitauthor}/${_gitname}#branch=${_gitbranch}" "${_gi
 sha512sums=('SKIP'
             'bb274ca29a994ef8b98aa77e0be745e297bd2f7e65dd394594169ffec3910b4dd4982e353202c6b201472632a3f7b16bd7d905b7006e21d76b7299b78fc7f390')
 arch=('any')
-depends=('java-environment>=7' 'postgresql')
-makedepends=('git' 'maven' 'apache-ant')
+depends=('java-runtime>=8' 'postgresql')
+makedepends=('git' 'maven' 'apache-ant' 'java-environment>=8')
 conflicts=("${_gitname}")
 provides=("${_gitname}")
 
@@ -25,6 +25,8 @@ pkgver() {
 }
 
 build() {
+  java -version 2>&1 | grep 'version "1.8' >/dev/null || (printf "\e[1;31mJDK8 is required.\e[0m\nsudo archlinux-java set java-8-openjdk\n" && exit 1)
+
   cd "${srcdir}/${_gitname}"
   mvn dependency:copy-dependencies
   ant -f src/main/java/com/google/security/zynamics/build.xml \
